@@ -16,11 +16,11 @@ http.createServer(function (req, res) {
 	   rl.close();
 	   processCode(code);
    }
-}).listen(8081);
+}).listen(config.server_port,config.server_host_ip);
 
 var imap = new Imap({
   user: config.imap_user,
-  password: config.imap_pass,
+  password: config.imap_password,
   host: 'imap.gmail.com',
   port: 993,
   tls: true,
@@ -94,9 +94,7 @@ var OAuth2Client = googleapis.OAuth2Client;
 
 // Client ID and client secret are available at
 // https://code.google.com/apis/console
-var CLIENT_ID = '746917355584.apps.googleusercontent.com';
-var CLIENT_SECRET = 'Bdis2MdbJdSCaTt-ZVg2zkT0';
-var REDIRECT_URL = 'http://localhost:8081/';
+
 
 var rl = readline.createInterface({
   input: process.stdin,
@@ -165,7 +163,7 @@ googleapis.discover('calendar', 'v3').execute(function(err, client) {
 
 	theclient=client;
 
-	theoauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+	theoauth2Client = new OAuth2Client(config.client_id, config.client_secret, config.redirect_url);
 
 	// retrieve an access token
 	getAccessToken();
