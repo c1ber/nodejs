@@ -172,7 +172,7 @@ googleapis.discover('calendar', 'v3').execute(function(err, client) {
 
 	// retrieve an access token
 	var token=storage.getItem('token');
-	console.log(token);
+	
 	if(token)
 		theoauth2Client.credentials = token;
 	else
