@@ -3,7 +3,10 @@ var readline = require('readline');
 var googleapis = require('googleapis');
 var inspect = require('util').inspect;
 var http = require('http');
+var storage = require('node-persist');
 var config = require('./config');
+
+storage.initSync();
 
 http.createServer(function (req, res) {
   var url=require('querystring').parse(req.url);
@@ -121,6 +124,8 @@ function processCode(code) {
 		console.log("Code entered!")
 		// request access token
 		theoauth2Client.getToken(code, function(err, tokens) {
+		  storage.setItem('token',tokens);
+		  storage.persistSync();
 		  // set tokens to the client
 		  // TODO: tokens should be set by OAuth2 client.
 		  theoauth2Client.credentials = tokens;
@@ -166,6 +171,10 @@ googleapis.discover('calendar', 'v3').execute(function(err, client) {
 	theoauth2Client = new OAuth2Client(config.client_id, config.client_secret, config.redirect_url);
 
 	// retrieve an access token
-	getAccessToken();
-
+	var token=storage.getItem('token');
+	console.log(token);
+	if(token)
+		theoauth2Client.credentials = token;
+	else
+		getAccessToken();
 });
