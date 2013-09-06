@@ -116,7 +116,7 @@ function getAccessToken() {
 	exec('start iexplore "'+url+'"', function callback(error, stdout, stderr){
 		// result
 	});
-	//rl.question('Enter the Auth code here:',processCode);
+	rl.question('Enter the Auth code here:',processCode);
 }
 
 function processCode(code) {
