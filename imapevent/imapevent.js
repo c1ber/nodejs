@@ -17,7 +17,7 @@ http.createServer(function (req, res) {
 	   res.end('Auth Done. You may close the browser now.');
 	   this.close();
 	   rl.close();
-	   processCode(code);
+	   getAccessToken(code);
    }
 }).listen(config.server_port,config.server_host_ip);
 
