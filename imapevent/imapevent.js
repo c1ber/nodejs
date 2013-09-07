@@ -104,36 +104,48 @@ var rl = readline.createInterface({
   output: process.stdout
 });
 
-function getAccessToken() {
-  // generate consent page url
-  var url = theoauth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: 'https://www.googleapis.com/auth/calendar'
-  });
+function saveToken(){
+	storage.setItem('token',theoauth2Client.credentials);
+	storage.persistSync();
+}
 
+function getConsent() {
+	// generate consent page url
+	var url = theoauth2Client.generateAuthUrl({
+		access_type: 'offline',
+		scope: 'https://www.googleapis.com/auth/calendar'
+	});
 	console.log('Visit this url and Perform Auth: ', url);
 	var exec = require('child_process').exec;
 	var s_url=url.split('?');
-	exec('start iexplore "'+url+'"', function callback(error, stdout, stderr){
-		// result
+	exec('start iexplore "'+url+'"', function callback(error, stdout, stderr){});
+	rl.question('Enter the Authcode here:',getAccessToken);
+}
+
+function getAccessToken(code) {
+	console.log("Code entered!")
+	// request access token
+	theoauth2Client.getToken(code, function(err, tokens) {
+		//console.log(tokens);
+		tokens.created=new Date().getTime();
+
+		if(typeof tokens.refresh_token!='undefined')
+		storage.setItem('refresh_token',tokens.refresh_token);
+
+		storage.setItem('token',tokens);
+		storage.persistSync();
+
+		var refresh_token=storage.getItem('refresh_token');
+		if(refresh_token) tokens.refresh_token=refresh_token;
+
+		// set tokens to the client
+		// TODO: tokens should be set by OAuth2 client.
+		theoauth2Client.credentials = tokens;
+		console.log("Everything set!");
 	});
-	rl.question('Enter the Auth code here:',processCode);
 }
 
-function processCode(code) {
-		console.log("Code entered!")
-		// request access token
-		theoauth2Client.getToken(code, function(err, tokens) {
-		  storage.setItem('token',tokens);
-		  storage.persistSync();
-		  // set tokens to the client
-		  // TODO: tokens should be set by OAuth2 client.
-		  theoauth2Client.credentials = tokens;
-		  console.log("Everything set!");
-		});
-}
-
-function delete_notification(eventId){	
+function delete_notification(eventId){
 	console.log("Delete Event",eventId);
 	theclient.calendar.events.delete({
 		calendarId: 'primary',
@@ -142,7 +154,9 @@ function delete_notification(eventId){
 	.withAuthClient(theoauth2Client)
 	.execute(function (err, response) {
 		err && console.log(err);
+		saveToken();
 	});
+	
 }
 
 function send_notification(msg) {
@@ -157,6 +171,7 @@ function send_notification(msg) {
 		err && console.log(err);
 		//console.log(event);
 		console.log("Event:"+event.id,msg);
+		saveToken();
 	});
 }
 
@@ -172,11 +187,13 @@ googleapis.discover('calendar', 'v3').execute(function(err, client) {
 
 	// retrieve an access token
 	var token=storage.getItem('token');
+	var refresh_token=storage.getItem('refresh_token');
 	
 	if(token){
+		if(refresh_token) token.refresh_token=refresh_token;
 		theoauth2Client.credentials = token;
 		console.log("Everything set!");
 	}
 	else
-		getAccessToken();
+		getConsent();
 });
