@@ -73,7 +73,7 @@ function register_mail_hook(){
 		console.log('New Email',msg);
 		fetch_mail(function(header){
 			var msg;
-			msg=header.from.join('-').replace(/@/g,'©');
+			msg=header.from.join('-').replace(/@/g,'#');
 			msg+="'";
 			msg+=header.subject.join('');
 			msg+="' 0 minute";
