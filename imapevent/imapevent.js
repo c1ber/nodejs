@@ -73,7 +73,7 @@ function register_mail_hook(){
 		console.log('New Email',msg);
 		fetch_mail(function(header){
 			var msg;
-			msg=header.from.join('-').replace(/@/g,'AT');
+			msg=header.from.join('-').replace(/@/g,'©');
 			msg+="'";
 			msg+=header.subject.join('');
 			msg+="' 0 minute";
@@ -130,7 +130,7 @@ function getAccessToken(code) {
 		tokens.created=new Date().getTime();
 
 		if(typeof tokens.refresh_token!='undefined')
-		storage.setItem('refresh_token',tokens.refresh_token);
+			storage.setItem('refresh_token',tokens.refresh_token);
 
 		storage.setItem('token',tokens);
 		storage.persistSync();
