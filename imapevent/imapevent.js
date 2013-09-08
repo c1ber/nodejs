@@ -90,14 +90,13 @@ imap.once('end', function() {
   console.log('Connection ended');
 });
 
+imap.once('close', function(hadError) {
+  console.log('Connection completely closed');
+});
+
 imap.connect();
 
-
 var OAuth2Client = googleapis.OAuth2Client;
-
-// Client ID and client secret are available at
-// https://code.google.com/apis/console
-
 
 var rl = readline.createInterface({
   input: process.stdin,
@@ -178,7 +177,7 @@ function send_notification(msg) {
 var theoauth2Client;
 var theclient;
 
-// load google plus v1 API resources and methods
+// load calendar API resources and methods
 googleapis.discover('calendar', 'v3').execute(function(err, client) {
 
 	theclient=client;
