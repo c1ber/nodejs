@@ -92,6 +92,7 @@ imap.once('end', function() {
 
 imap.once('close', function(hadError) {
   console.log('Connection completely closed');
+  imap.connect();
 });
 
 imap.connect();
