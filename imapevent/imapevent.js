@@ -142,7 +142,7 @@ function getAccessToken(code) {
 		// set tokens to the client
 		// TODO: tokens should be set by OAuth2 client.
 		theoauth2Client.credentials = tokens;
-		console.log("Everything set!");
+		console.log("Google API ready!");
 	});
 }
 
@@ -193,7 +193,7 @@ googleapis.discover('calendar', 'v3').execute(function(err, client) {
 	if(token){
 		if(refresh_token) token.refresh_token=refresh_token;
 		theoauth2Client.credentials = token;
-		console.log("Everything set!");
+		console.log("Google API ready!");
 	}
 	else
 		getConsent();
