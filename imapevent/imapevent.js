@@ -37,12 +37,13 @@ function openInbox(cb) {
 
 var thebox;
 
-imap.once('ready', function() {
-  openInbox(function(err, box) {
-	  if (err) throw err;
-	  thebox=box;
-	  register_mail_hook();
-  });
+imap.on('ready', function() {
+	console.log('IMAP ready!')
+	openInbox(function(err, box) {
+		if (err) throw err;
+		thebox=box;
+		register_mail_hook();
+	});
 });
 
 function fetch_mail(callback){  
