@@ -70,6 +70,7 @@ function fetch_mail(callback){
 }
 
 function register_mail_hook(){
+	imap.removeAllListeners('mail');
 	imap.on('mail', function(msg) {
 		console.log('New Email',msg);
 		fetch_mail(function(header){
