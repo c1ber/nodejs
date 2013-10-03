@@ -76,9 +76,8 @@ function register_mail_hook(){
 		fetch_mail(function(header){
 			var msg;
 			msg=header.from.join('-').replace(/@/g,'#');
-			msg+="'";
 			msg+=header.subject.join('');
-			msg+="' 0 minute";
+			msg+=" 0 minute";
 			send_notification(msg);
 		});	
 	});
