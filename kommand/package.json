@@ -1,0 +1,19 @@
+{  
+  "name": "kommand",
+  "version": "1.0.0",  
+  "description": "Android Google Now Xposed API communication with Nodejs.",
+  "author": "kaalpurush",
+  "repository": {
+    "url": ""
+  },
+  "main": "./lib/kommand",
+  "dependencies": {
+	"mdns": "1.1.0"
+  },
+  "scripts": {
+    "test": "node test/run"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
