@@ -3,36 +3,33 @@ var util = require('util');
 var mdns = require('mdns');
 var events = require('events');
 
-this.events=new events.EventEmitter;
+var Kommand=function(){
+	var self=this;
+	this.run=function (port, host){
+		net.createServer(function(sock) {
+			sock.on('data', function(data) {
+				try{	
+					var cmd=data.toString();
+					//console.log(cmd);
+					self.emit('data',cmd);				
+					process_cmd(cmd);				
+				}catch(e){}
+			});
+			
+			sock.on('close', function(data) {
+				//console.log((new Date().toUTCString()) + ' disconnected.');
+			});
+			
+		}).listen(port, host);
 
-var self=this;
-
-this.run=function (port, host){
-	net.createServer(function(sock) {
-		// We have a connection - a socket object is assigned to the connection automatically
-		//console.log((new Date().toUTCString()) + ': CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
-		
-		// Add a 'data' event handler to this instance of socket
-		sock.on('data', function(data) {
-			try{	
-				var cmd=data.toString();
-				//console.log(cmd);
-				self.events.emit('data',cmd);				
-				process_cmd(cmd);				
-			}catch(e){}
-		});
-		
-		// Add a 'close' event handler to this instance of socket
-		sock.on('close', function(data) {
-			//console.log((new Date().toUTCString()) + ' disconnected.');
-		});
-		
-	}).listen(port, host);
-
-	// advertise this open connection
-	var ad = mdns.createAdvertisement(mdns.tcp('kommand'), port);
-	ad.start();
+		// advertise this open connection
+		var ad = mdns.createAdvertisement(mdns.tcp('kommand'), port);
+		ad.start();
+	}
 }
+
+util.inherits(Kommand, events.EventEmitter);
+
 
 //console.log((new Date().toUTCString()) + ': Socket server listening on ' + HOST +':'+ PORT);
 
@@ -75,4 +72,4 @@ function process_cmd(cmd){
 	
 }
 
-exports=this;
+exports.instance=new Kommand;
