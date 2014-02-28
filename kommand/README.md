@@ -1,7 +1,9 @@
 kommand
 =======
 
-Android Google Now Xposed API communication with Nodejs
+Android Google Now Xposed API communication with Nodejs. The android counter-part is here:
+
+[kommand](https://github.com/kaalpurush/kommand) 
 
 Uses: 
 
