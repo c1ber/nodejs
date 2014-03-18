@@ -1,6 +1,8 @@
 kommand
 =======
 
+[![NPM](https://nodei.co/npm/kommand.png)](https://nodei.co/npm/kommand/)
+
 Android Google Now Xposed API communication with Nodejs. The android counter-part is here:
 
 [kommand](https://github.com/kaalpurush/kommand) 
