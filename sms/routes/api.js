@@ -1,6 +1,7 @@
 var config=require('../config/');
 var MongoClient = require('mongodb').MongoClient;
-var Synergy=require('../libraries/synergy');
+var Synergy=require('../libraries/Synergy');
+var Airtel=require('../libraries/Airtel');
 /*
  * GET home page.
  */
@@ -37,25 +38,57 @@ function send(messages,callback){
     var synergy=new Synergy(config.synergy.api_key,config.synergy.api_secret);
     for(i in messages){
         var message=messages[i];
-        var processed= 0,success_count= 0,failed_count=0;
+        var processed= 0,success= 0,failed=0;
 
         synergy.send(message.to, message.msg,function(status){
             processed++;
             if(status==0)
-                failed_count++;
+                failed++;
             else
-                success_count++;
+                success++;
             if(processed==messages.length)
-                callback({success_count:success_count,failed_count:failed_count});
+                callback({total:messages.length,success:success,failed:failed});
         });
     }
 }
 
+function showReport(api_key,day,month,year,callback){
+
+}
+
+function addReport(api_key,day,month,year,report,callback){
+    MongoClient.connect(config.mongo.connection, function(err, db) {
+        if(err) throw err;
+        db.collection('reports').update({api_key: api_key,day:day,month:month,year:year},{$inc:report}, {upsert:true}, function(err, objects) {
+            if(err) throw err;
+        });
+    });
+}
+
 exports.send = function(req, res){
-    authenticate({api_key:req.body.api_key,api_secret:req.body.api_secret},
+    var api_key=req.body.api_key;
+    var api_secret=req.body.api_secret;
+    authenticate({api_key:api_key,api_secret:api_secret},
         function(){
-            send(req.body.messages,function(sent){
-                res.json({total:req.body.messages.length,success:sent.success_count,failed:sent.failed_count});
+            send(req.body.messages,function(report){
+                var date=new Date;
+                addReport(api_key,date.getDay(),date.getMonth()+1,date.getFullYear(),report);
+                res.json(report);
+            });
+        },
+        function(){
+            res.json({error:'Auth Error!'});
+        }
+    );
+}
+
+exports.report = function(req, res){
+    var api_key=req.body.api_key;
+    var api_secret=req.body.api_secret;
+    authenticate({api_key:api_key,api_secret:api_secret},
+        function(){
+            report(api_key,day,month,year,function(report){
+                res.json(report);
             });
         },
         function(){

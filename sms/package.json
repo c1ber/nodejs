@@ -16,6 +16,7 @@
   "dependencies": {
     "express": "3.5.0",
     "ejs": "*",
-	"request": "*"
+	"request": "*",
+	mongodb: "*"
   }
 }
