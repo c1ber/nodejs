@@ -53,7 +53,20 @@ function send(messages,callback){
 }
 
 function showReport(api_key,day,month,year,callback){
-
+    MongoClient.connect(config.mongo.connection, function(err, db) {
+        if(err) throw err;
+        var collection = db.collection('reports');
+        var conditions={};
+        if(day)
+            conditions.day=day;
+        if(month)
+            conditions.month=month;
+        conditions.year=year;
+        console.log(conditions);
+        collection.find(conditions).sort({year: -1, month: -1, day: -1}).toArray(function(err, results){
+            callback(results);
+        });
+    });
 }
 
 function addReport(api_key,day,month,year,report,callback){
@@ -72,7 +85,7 @@ exports.send = function(req, res){
         function(){
             send(req.body.messages,function(report){
                 var date=new Date;
-                addReport(api_key,date.getDay(),date.getMonth()+1,date.getFullYear(),report);
+                addReport(api_key,date.getDate(),date.getMonth()+1,date.getFullYear(),report);
                 res.json(report);
             });
         },
@@ -83,12 +96,16 @@ exports.send = function(req, res){
 }
 
 exports.report = function(req, res){
+    console.log(req.body);
     var api_key=req.body.api_key;
     var api_secret=req.body.api_secret;
+    var day=req.body.day;
+    var month=req.body.month;
+    var year=req.body.year;
     authenticate({api_key:api_key,api_secret:api_secret},
         function(){
-            report(api_key,day,month,year,function(report){
-                res.json(report);
+            showReport(api_key,day,month,year,function(report){
+                    res.json(report);
             });
         },
         function(){
