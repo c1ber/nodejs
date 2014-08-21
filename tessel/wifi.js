@@ -1,12 +1,8 @@
-var tessel = require('tessel'); 
-var kommand=require('kommand').instance;
-var gpio = tessel.port['GPIO'];
-
 /* the wifi-cc3000 library is bundled in with Tessel's firmware,
  * so there's no need for an npm install. It's similar
  * to how require('tessel') works.
  */ 
-var config = require('./config.js');
+var config = require('config');
 var wifi = require('wifi-cc3000');
 var network = config.wifi_network; // put in your network name here
 var pass = config.wifi_password; // put in your password here, or leave blank for unsecured
@@ -38,8 +34,7 @@ function connect(){
 }
 
 wifi.on('connect', function(err, data){
-  // you're connected  
-  startKommander();  
+  // you're connected
   console.log("wifi connect emitted", err, data);
 });
 
@@ -61,46 +56,3 @@ wifi.on('error', function(err){
   // 3. tried to initialize a connection without first waiting for a timeout or a disconnect
   console.log("wifi error emitted", err);
 });
-
-startKommander=function(){
-	setTimeout(function(){
-		kommand.run(6969,"0.0.0.0",false);
-		tessel.led[0].write(1);
-	},2000);
-
-	kommand.on('data',function(cmd){
-		console.log(cmd);
-		cmd=cmd.toLowerCase();
-		
-		tessel.led[1].write(1);
-		setTimeout(function(){tessel.led[1].write(0);}, 500);
-		
-		if(cmd.indexOf('wind')>=0 && cmd.indexOf('on')>=0){
-			gpio.digital[2].write(1);	
-		}
-		else if(cmd.indexOf('wind')>=0 && (cmd.indexOf('off')>=0 || cmd.indexOf('of')>=0)){
-			gpio.digital[2].write(0);	
-		}
-		
-		if(cmd.indexOf('light')>=0 && cmd.indexOf('on')>=0){
-			gpio.digital[3].write(1);	
-		}
-		else if(cmd.indexOf('light')>=0 && (cmd.indexOf('off')>=0 || cmd.indexOf('of')>=0)>=0){
-			gpio.digital[3].write(0);	
-		}
-		
-		if(cmd.indexOf('all')>=0 && cmd.indexOf('on')>=0){
-			gpio.digital[2].write(1);	
-			gpio.digital[3].write(1);
-		}
-		else if(cmd.indexOf('all')>=0 && (cmd.indexOf('off')>=0 || cmd.indexOf('of')>=0)>=0){
-			gpio.digital[2].write(0);	
-			gpio.digital[3].write(0);	
-		}
-	});
-	
-}
-
-
-	
-
