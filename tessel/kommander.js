@@ -1,5 +1,5 @@
 var tessel = require('tessel'); 
-var kommand=require('kommand').instance;
+var kommand=require('./kommand.js').instance;
 var gpio = tessel.port['GPIO'];
 
 /* the wifi-cc3000 library is bundled in with Tessel's firmware,

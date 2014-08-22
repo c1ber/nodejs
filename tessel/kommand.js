@@ -4,9 +4,7 @@ var events = require('events');
 
 var Kommand=function(){
 	var self=this;
-	this.run=function (port, host, enable_mdns){
-		if(typeof self.server!='undefined' && self.server.isConnected())
-			return;
+	this.run=function (port, host, enable_mdns){			
 		self.server = net.createServer(function(sock) {
 			sock.on('data', function(data) {
 				try{	
@@ -18,6 +16,7 @@ var Kommand=function(){
 			
 			sock.on('close', function(data) {
 				console.log((new Date().toUTCString()) + ' socket closed.');
+				self.run();
 			});
 			
 		}).listen(port, host);
