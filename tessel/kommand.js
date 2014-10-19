@@ -4,19 +4,31 @@ var events = require('events');
 
 var Kommand=function(){
 	var self=this;
-	this.run=function (port, host, enable_mdns){			
+	var running=false;
+	
+	this.isRunning=function(){
+		return self.running;
+	}
+	
+	this.run=function (port, host, enable_mdns){
+		running=true;
+		
 		self.server = net.createServer(function(sock) {
 			sock.on('data', function(data) {
 				try{	
 					var cmd=data.toString();
 					//console.log(cmd);
 					self.emit('data',cmd);
+					sock.end();
 				}catch(e){}
 			});
 			
-			sock.on('close', function(data) {
-				console.log((new Date().toUTCString()) + ' socket closed.');
-				self.run();
+			sock.on('close', function(had_error) {
+				console.log('- socket closed, had_error? '+had_error);
+			});
+			
+			sock.on('end', function() {
+				console.log('- socket ended.');
 			});
 			
 		}).listen(port, host);
