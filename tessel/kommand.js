@@ -31,7 +31,19 @@ var Kommand=function(){
 				console.log('- socket ended.');
 			});
 			
+			sock.on('error', function(error) {
+				console.log('- socket error: '+error);
+			});
+			
 		}).listen(port, host);
+		
+		self.server.on('error', function (error) {	
+			console.log('- server error: '+error);
+			setTimeout(function () {
+				self.server.close();
+				self.server.listen(port, host);
+			}, 10000);			
+		});
 
 		// advertise this open connection
 		if(typeof enable_mdns=='undefined' || enable_mdns){

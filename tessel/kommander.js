@@ -11,6 +11,7 @@ var wifi = require('wifi-cc3000');
 var network = config.wifi_network; // put in your network name here
 var pass = config.wifi_password; // put in your password here, or leave blank for unsecured
 var security = 'wpa2'; // other options are 'wep', 'wpa', or 'unsecured'
+var timer;
 
 var started = false;
 
@@ -42,20 +43,25 @@ function connectWifi() {
 function registerWifiEvent() {
 	wifi.on('connect', function(err, data) {
 		// you're connected 
+		if(timer)
+			timer.clearInterval();
 		if (!started)
 			startKommander();
 		console.log("wifi connect emitted", err, data);
 	});
 
 	wifi.on('disconnect', function(err, data) {
-		// wifi dropped, probably want to call connect() again
+		// wifi dropped, probably want to call connect() again		
 		console.log("wifi disconnect emitted", err, data);
+		timer=setInterval(function(){
+			connectWifi();
+		},10000);
 	})
 
 	wifi.on('timeout', function(err) {
 		// tried to connect but couldn't, retry
 		console.log("wifi timeout emitted");
-		connect();
+		connectWifi();
 	});
 
 	wifi.on('error', function(err) {
@@ -64,6 +70,9 @@ function registerWifiEvent() {
 		// 2. tried to disconnect while in the middle of trying to connect
 		// 3. tried to initialize a connection without first waiting for a timeout or a disconnect
 		console.log("wifi error emitted", err);
+		timer=setInterval(function(){
+			connectWifi();
+		},10000);
 	});
 }
 
